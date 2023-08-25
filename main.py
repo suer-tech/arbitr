@@ -3,6 +3,7 @@ import unittest
 import time
 import requests
 import okx.MarketData as MarketData
+from python_1inch import OneInchExchange
 
 timestamp = int(time.time() * 1000)
 
@@ -51,13 +52,10 @@ def get_whitelisted_token_prices():
     if response.status_code == 200:
         prices = response.json()
         print("Prices for whitelisted tokens:")
-        for token_address, price in prices.items():
-            print(f"{token_address}: {price}")
     else:
         print("Failed to fetch token prices.")
     for data in prices:
         tickers_1inch.append(data)
-    print(tickers_1inch)
     return tickers_1inch
 
 tickers_1inch = get_whitelisted_token_prices()
@@ -87,13 +85,21 @@ def get_contract_adress(sym, chain, array):
             else:
                 continue
 
-# Создаём массивы под каждую сеть________________________________________________________________________________________
+def get_1inch_price(ticker, cotract_adress):
+
+    token_exchange = OneInchExchange(cotract_adress)
+    quote = token_exchange.get_quote(from_token_symbol=ticker, to_token_symbol='USDT', amount=1)
+    return quote
+
+# Создаём массивы под каждую сеть_______________________________________________________________________________________
 ethereum = []
 zksync = []
 arbitrum = []
 binance = []
 polygon = []
 avalanche = []
+
+ethereum_1inch = []
 
 # Получаем все тикеры с адресами контрактов c Сoingwcko_________________________________________________________________
 all_tickers = get_all_tickers()
@@ -106,4 +112,12 @@ for d in tickers_bin:
 for t in tickers_1inch:
     for e in ethereum:
         if t == e['contract_adress']:
+            try:
+                price_1inch = get_1inch_price(e['symbol'].upper(), e['contract_adress'])
+            except KeyError:
+                continue
+            e['price'] = price_1inch
+            ethereum_1inch.append(e)
             print(e)
+
+
