@@ -85,11 +85,23 @@ def get_contract_adress(sym, chain, array):
             else:
                 continue
 
-def get_1inch_price(ticker, cotract_adress):
+def get_requested_token_prices(tokens):
+    url = "https://api.1inch.dev/price/v1.1/1"
 
-    token_exchange = OneInchExchange(cotract_adress)
-    quote = token_exchange.get_quote(from_token_symbol=ticker, to_token_symbol='USDT', amount=1)
-    return quote
+    payload = {
+        "tokens": tokens
+    }
+
+    response = requests.post(url)
+    print(response)
+    # , json=payload)
+    # if response.status_code == 200:
+    #     prices = response.json()
+    #     print("Prices for requested tokens:")
+    #     for token_address, price in prices.items():
+    #         print(f"{token_address}: {price}")
+    # else:
+    #     print("Failed to fetch token prices.")
 
 # Создаём массивы под каждую сеть_______________________________________________________________________________________
 ethereum = []
@@ -112,10 +124,7 @@ for d in tickers_bin:
 for t in tickers_1inch:
     for e in ethereum:
         if t == e['contract_adress']:
-            try:
-                price_1inch = get_1inch_price(e['symbol'].upper(), e['contract_adress'])
-            except KeyError:
-                continue
+            price_1inch = get_requested_token_prices([e['contract_adress']])
             e['price'] = price_1inch
             ethereum_1inch.append(e)
             print(e)
