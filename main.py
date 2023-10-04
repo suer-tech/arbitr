@@ -6,9 +6,9 @@ from json import JSONDecodeError
 import requests
 # import okx.MarketData as MarketData
 from python_1inch import OneInchExchange
-time = 1000
+times = 1000
 api_key = "UNfmcKAyoQSZ3iEr27o4SZbr2xx0j6Su"
-timestamp = int(time.time() * time)
+timestamp = int(time.time() * times)
 
 url_bin = "https://api.binance.com/api/v3/ticker/price"
 url_bit = "https://api-testnet.bybit.com/v5/market/tickers?category=spot"
